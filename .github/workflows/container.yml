@@ -1,9 +1,9 @@
-name: ci
+name: Build container
 
 on:
   push:
     branches:
-      - 'main'
+      - main
 
 jobs:
   docker:
