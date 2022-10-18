@@ -10,4 +10,4 @@ fi
 
 chown -R nsd:nsd /storage/db
 
-nsd -d
+nsd -d $NSD_OPTIONS
