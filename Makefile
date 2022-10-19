@@ -1,2 +1,2 @@
 build:
-	docker build -t nsd:latest .
+	docker build -t jschlyter/nsd:latest .
