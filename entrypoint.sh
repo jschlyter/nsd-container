@@ -1,13 +1,11 @@
 #!/bin/bash
 
-if [ ! -d /storage/db/nsd ]; then
-	install -d -g nsd -m 770 /storage/db/nsd
+if [ ! -d /storage/zones ]; then
+	install -d -o nsd -g nsd -m 775 /storage/zones
 fi
 
 if [ ! -f /config/nsd_control.key ]; then
 	nsd-control-setup
 fi
-
-chown -R nsd:nsd /storage/db
 
 nsd -d $NSD_OPTIONS
