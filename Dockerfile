@@ -1,4 +1,4 @@
-FROM debian:stable-slim
+FROM debian:bookworm-slim
 
 ENV BUILD_PKGS \
     build-essential \
@@ -19,9 +19,7 @@ WORKDIR /nsd-src
 RUN curl -L `curl -s https://api.github.com/repos/nlnetlabs/nsd/releases/latest | jq -r .tarball_url` | tar --strip-components 1 -xzf -
 
 # Build the project
-RUN aclocal && \
-    autoconf && \
-    autoheader && \
+RUN autoreconf --install && \
     ./configure --with-configdir=/config --localstatedir=/storage && \
     make && \
     make DESTDIR=/tmp/nsd-install install
@@ -30,14 +28,13 @@ RUN aclocal && \
 RUN tar cvzfC /nsd.tar.gz /tmp/nsd-install usr/local config storage
 
 
-FROM debian:stable-slim
+FROM debian:bookworm-slim
 
 # Environment
 ENV RUNTIME_PKGS \
     procps \
-    ldnsutils \
     openssl \
-    libssl1.1 \
+    libssl3 \
     libevent-2.1
 
 # Copy artifacts
