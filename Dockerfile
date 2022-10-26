@@ -20,7 +20,7 @@ RUN curl -L `curl -s https://api.github.com/repos/nlnetlabs/nsd/releases/latest 
 
 # Build the project
 RUN autoreconf --install && \
-    ./configure --with-configdir=/config --localstatedir=/storage && \
+    ./configure --with-configdir=/config --localstatedir=/storage --enable-root-server && \
     make && \
     make DESTDIR=/tmp/nsd-install install
 
