@@ -48,7 +48,7 @@ RUN apt-get update && \
     apt-get install -yqq ${RUNTIME_PKGS} && \
     rm -rf /var/lib/apt/lists/* && \
     ldconfig && \
-    adduser --quiet --system --group --no-create-home --home /storage --uid=${UID} nsd && \
+    useradd --system --user-group -M --home /storage --uid ${UID} nsd && \
     install -d -o nsd -g nsd /config /storage && \
     chown -R nsd:nsd /config /storage
 
