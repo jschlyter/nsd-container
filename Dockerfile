@@ -1,22 +1,31 @@
-FROM debian:bookworm-slim
+FROM debian:stable-slim AS builder
+
+ARG BRANCH=release-4.13.0
 
 ENV BUILD_PKGS \
     build-essential \
     autoconf \
     libevent-dev \
     libssl-dev \
+    protobuf-compiler \
+    protobuf-c-compiler \
+    libprotobuf-c-dev \
+    libfstrm-dev \
     bison \
     flex \
     curl \
-    jq
+    jq \
+    git
 
-# Install dependencies
+    # Install dependencies
 RUN apt-get update && \
     apt-get install -yqq ${BUILD_PKGS}
 
 # Fetch source
-WORKDIR /nsd-src
-RUN curl -L `curl -s https://api.github.com/repos/nlnetlabs/nsd/releases/latest | jq -r .tarball_url` | tar --strip-components 1 -xzf -
+RUN git clone https://github.com/nlnetLabs/nsd /src/nsd
+WORKDIR /src/nsd
+RUN git checkout -b ${BRANCH}
+RUN git submodule update --init
 
 # Build the project
 RUN autoreconf --install && \
@@ -28,17 +37,19 @@ RUN autoreconf --install && \
 RUN tar cvzfC /nsd.tar.gz /tmp/nsd-install usr/local config storage
 
 
-FROM debian:bookworm-slim
+FROM debian:stable-slim
 
 # Environment
 ENV RUNTIME_PKGS \
     procps \
     openssl \
     libssl3 \
-    libevent-2.1
+    libevent-2.1 \
+    libprotobuf-c1 \
+    libfstrm-dev
 
 # Copy artifacts
-COPY --from=0 /nsd.tar.gz /tmp
+COPY --from=builder /nsd.tar.gz /tmp
 RUN tar xvzpf /tmp/nsd.tar.gz
 RUN rm -f /tmp/nsd.tar.gz
 
@@ -57,11 +68,12 @@ ADD nsd.conf /config
 
 # Add entrypoint
 ADD entrypoint.sh /
-ENTRYPOINT bash /entrypoint.sh
+ENTRYPOINT ["bash", "/entrypoint.sh"]
 
 # Expose port
-EXPOSE 53/UDP
-EXPOSE 53/TCP
+EXPOSE 53/udp
+EXPOSE 53/tcp
+EXPOSE 853/tcp
 
 # Prepare shared directories
 VOLUME /config
