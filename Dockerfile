@@ -1,25 +1,10 @@
 FROM debian:stable-slim AS builder
 
-ARG BRANCH=release-4.13.0
+ARG BRANCH="release-4.13.0"
+ENV BUILD_PKGS="build-essential git autoconf automake libtool make libevent-dev libssl-dev flex bison libfstrm-dev protobuf-c-compiler libprotobuf-c-dev"
 
-ENV BUILD_PKGS \
-    build-essential \
-    autoconf \
-    libevent-dev \
-    libssl-dev \
-    protobuf-compiler \
-    protobuf-c-compiler \
-    libprotobuf-c-dev \
-    libfstrm-dev \
-    bison \
-    flex \
-    curl \
-    jq \
-    git
-
-    # Install dependencies
-RUN apt-get update && \
-    apt-get install -yqq ${BUILD_PKGS}
+# Install dependencies
+RUN apt-get update && apt-get install -yqq ${BUILD_PKGS}
 
 # Fetch source
 RUN git clone https://github.com/nlnetLabs/nsd /src/nsd
@@ -39,14 +24,7 @@ RUN tar cvzfC /nsd.tar.gz /tmp/nsd-install usr/local config storage
 
 FROM debian:stable-slim
 
-# Environment
-ENV RUNTIME_PKGS \
-    procps \
-    openssl \
-    libssl3 \
-    libevent-2.1 \
-    libprotobuf-c1 \
-    libfstrm-dev
+ENV RUNTIME_PKGS="procps openssl libssl3 libevent-2.1 libprotobuf-c1 libfstrm-dev"
 
 # Copy artifacts
 COPY --from=builder /nsd.tar.gz /tmp
@@ -70,7 +48,7 @@ ADD nsd.conf /config
 ADD entrypoint.sh /
 ENTRYPOINT ["bash", "/entrypoint.sh"]
 
-# Expose port
+# Expose ports
 EXPOSE 53/udp
 EXPOSE 53/tcp
 EXPOSE 853/tcp
