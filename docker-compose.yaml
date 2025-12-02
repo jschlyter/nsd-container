@@ -1,0 +1,45 @@
+volumes:
+  nsd:
+
+services:
+  nsd:
+    image: ghcr.io/jschlyter/nsd-container
+    ports:
+      - 53:53/udp
+      - 53:53/tcp
+      - 853:853/tcp
+    volumes:
+      - nsd:/storage
+    configs:
+      - source: nsd.conf
+        target: /config/nsd.conf
+        mode: 0444
+      - source: entrypoint.sh
+        target: /entrypoint.sh
+        mode: 0444
+
+configs:
+  entrypoint.sh:
+    file: entrypoint.sh
+  nsd.conf:
+    content: |
+      server:
+        username: nsd
+        zonesdir: /storage/zones
+        database: /storage/nsd.db
+        pidfile: /var/run/nsd.pid
+
+        # DNS over TCP/UDP port 53
+        interface: 0.0.0.0@53
+        interface: ::@53
+
+        # DNS over TLS port 853
+        interface: 0.0.0.0@853
+        interface: ::@853
+
+        tls-service-key: /config/tls_service.key
+        tls-service-pem: /config/tls_service.pem
+
+      remote-control:
+        control-enable: yes
+        control-interface: lo
