@@ -20,5 +20,4 @@ jobs:
     steps:
       - uses: dataaxiom/ghcr-cleanup-action@v1
         with:
-          dry-run: true
           delete-untagged: true
