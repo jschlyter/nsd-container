@@ -1,4 +1,4 @@
-name: Build container
+name: Prune old containers
 
 on:
   #schedule:
