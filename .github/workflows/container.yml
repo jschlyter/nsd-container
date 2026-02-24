@@ -1,11 +1,11 @@
 name: Build container
 
 on:
-  # push:
-  #   branches:
-  #     - main
-  schedule:
-    - cron: "42 0 * * 0"
+  push:
+    branches:
+      - main
+  #schedule:
+  #  - cron: "42 0 * * 0"
   workflow_dispatch:
 
 env:
