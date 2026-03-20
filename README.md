@@ -1,6 +1,6 @@
 # NSD Container
 
-Build infrastructure for an NSD container using the [in-tree container Dockefile](https://github.com/NLnetLabs/nsd/tree/master/contrib/container).
+Build infrastructure for an NSD container using the [in-tree container Dockerfile](https://github.com/NLnetLabs/nsd/tree/master/contrib/container).
 
 
 ## Usage
