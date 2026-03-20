@@ -7,6 +7,9 @@ on:
   #schedule:
   #  - cron: "42 0 * * 0"
   workflow_dispatch:
+  release:
+    types:
+      - published
 
 env:
   REGISTRY: ghcr.io
@@ -25,7 +28,6 @@ jobs:
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - uses: actions/checkout@v6
       - uses: actions/checkout@v6
         with:
           repository: NLnetLabs/nsd
@@ -56,3 +58,6 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
+      - uses: dataaxiom/ghcr-cleanup-action@v1
+        with:
+          delete-untagged: true
